@@ -1,0 +1,22 @@
+{
+  "name": "code-executor-platform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Remote code execution platform similar to LeetCode",
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "start": "pnpm --filter server start",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  },
+  "keywords": [
+    "code-executor",
+    "leetcode",
+    "docker",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT"
+}
