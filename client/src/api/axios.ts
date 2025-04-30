@@ -11,7 +11,6 @@ const api = axios.create({
   },
 });
 
-// Add request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().token;
@@ -23,12 +22,10 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Add response interceptor to handle token expiration
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      // Token expired or invalid
       useAuthStore.getState().logout();
       window.location.href = '/login';
     }

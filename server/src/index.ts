@@ -11,7 +11,7 @@ import executionRoutes from './routes/execution.routes';
 import aiRoutes from './routes/ai.routes';
 import { seedDatabase } from './seeders';
 
-// Initialize express app
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -22,26 +22,24 @@ const io = new Server(server, {
   }
 });
 
-// Middleware
+
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
 
-// API routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/problems', problemRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/execute', executionRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Root endpoint
 app.get('/', (req, res) => {
   res.json({ message: 'CodeHub API is running' });
 });
 
-// Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
   const statusCode = err.statusCode || 500;
@@ -52,7 +50,6 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// Socket.io connection
 io.on('connection', (socket) => {
   console.log('A user connected', socket.id);
   
@@ -65,7 +62,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Database connection and server start
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
@@ -73,16 +69,15 @@ async function startServer() {
     await sequelize.authenticate();
     console.log('Database connection has been established successfully.');
     
-    // Sync database models
     await sequelize.sync({ alter: true });
     console.log('Database synced');
     
-    // Seed database if needed
+    
     if (process.env.NODE_ENV === 'development') {
       await seedDatabase();
     }
     
-    // Start server
+   
     server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
@@ -93,5 +88,5 @@ async function startServer() {
 
 startServer();
 
-// Export for testing
+
 export { app, io };

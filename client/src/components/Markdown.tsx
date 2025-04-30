@@ -29,7 +29,7 @@ export function Markdown({ content }: MarkdownProps) {
             </code>
           );
         },
-        // Override table to add responsive wrapper
+       
         table({ node, ...props }) {
           return (
             <div className="overflow-x-auto">
@@ -37,7 +37,7 @@ export function Markdown({ content }: MarkdownProps) {
             </div>
           );
         },
-        // Style table headers
+      
         th({ node, ...props }) {
           return (
             <th
@@ -46,7 +46,7 @@ export function Markdown({ content }: MarkdownProps) {
             />
           );
         },
-        // Style table cells
+      
         td({ node, ...props }) {
           return (
             <td

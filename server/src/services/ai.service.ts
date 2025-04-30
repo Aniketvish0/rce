@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import 'dotenv/config';
 import Problem from '../models/problem.model';
 
-// Initialize the Gemini API
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
@@ -23,13 +23,13 @@ export async function generateCodeFeedback(
   problemId: string
 ): Promise<AiFeedback> {
   try {
-    // Get problem details to provide context
+    
     const problem = await Problem.findByPk(problemId);
     if (!problem) {
       throw new Error('Problem not found');
     }
     
-    // Build a prompt for the AI
+
     const prompt = `
 You are an expert coding mentor providing feedback on a coding challenge solution.
 
@@ -64,20 +64,20 @@ Return your analysis as JSON in this exact format:
 }
 `;
 
-    // Send the prompt to Gemini
+    
     const result = await model.generateContent(prompt);
     const response = result.response;
     const text = response.text();
     
-    // Parse the JSON response
+
     try {
-      // Extract JSON from the response text (it might be surrounded by markdown code blocks)
+      
       const jsonMatch = text.match(/```(?:json)?([\s\S]*?)```/) || text.match(/{[\s\S]*}/);
       const jsonString = jsonMatch ? jsonMatch[0].replace(/```json?|```/g, '') : text;
       
       const feedback = JSON.parse(jsonString);
       
-      // Ensure the response has the expected structure
+     
       return {
         strengths: Array.isArray(feedback.strengths) ? feedback.strengths : [],
         weaknesses: Array.isArray(feedback.weaknesses) ? feedback.weaknesses : [],
@@ -91,7 +91,7 @@ Return your analysis as JSON in this exact format:
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
       
-      // Fallback response if parsing fails
+      
       return {
         strengths: ['Good attempt at solving the problem'],
         weaknesses: ['Unable to analyze the specific details of your code'],

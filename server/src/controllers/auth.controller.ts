@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.model';
 import { z } from 'zod';
 
-// Validation schemas
 const registerSchema = z.object({
   username: z.string().min(3).max(30),
   email: z.string().email(),
@@ -15,7 +14,6 @@ const loginSchema = z.object({
   password: z.string(),
 });
 
-// Generate JWT token
 const generateToken = (userId: string): string => {
   return jwt.sign(
     { userId },
@@ -24,13 +22,10 @@ const generateToken = (userId: string): string => {
   );
 };
 
-// Register a new user
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Validate request body
     const validatedData = registerSchema.parse(req.body);
     
-    // Check if user already exists
     const userExists = await User.findOne({
       where: {
         email: validatedData.email,
@@ -44,7 +39,6 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       });
     }
     
-    // Create new user
     const user = await User.create({
       username: validatedData.username,
       email: validatedData.email,
@@ -52,7 +46,6 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       isAdmin: false,
     });
     
-    // Generate JWT token
     const token = generateToken(user.id);
     
     res.status(201).json({
@@ -71,20 +64,16 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-// Login user
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Validate request body
     const validatedData = loginSchema.parse(req.body);
     
-    // Find user by email
     const user = await User.findOne({
       where: {
         email: validatedData.email,
       },
     });
     
-    // Check if user exists and password is correct
     if (!user || !(await user.validatePassword(validatedData.password))) {
       return res.status(401).json({
         status: 'error',
@@ -92,7 +81,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       });
     }
     
-    // Generate JWT token
     const token = generateToken(user.id);
     
     res.status(200).json({
@@ -111,10 +99,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-// Get current user
 export const getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // User should be attached to the request by the auth middleware
     const userId = req.user?.id;
     
     if (!userId) {

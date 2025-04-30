@@ -4,7 +4,6 @@ import { authenticate, requireAuth } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
-// Protected routes
 router.post('/', authenticate, requireAuth, submissionController.submitSolution);
 router.get('/me', authenticate, requireAuth, submissionController.getUserSubmissions);
 router.get('/problem/:problemId', submissionController.getProblemSubmissions);

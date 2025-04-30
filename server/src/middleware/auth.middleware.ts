@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model';
 
-// Extend the Request interface to include the user property
 declare global {
   namespace Express {
     interface Request {
@@ -14,14 +13,12 @@ declare global {
   }
 }
 
-// Authentication middleware
 export const authenticate = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    // Get token from Authorization header
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -34,20 +31,20 @@ export const authenticate = async (
       return next();
     }
     
-    // Verify token
+ 
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || 'default_secret'
     ) as { userId: string };
     
-    // Get user from database
+   
     const user = await User.findByPk(decoded.userId);
     
     if (!user) {
       return next();
     }
     
-    // Attach user to request
+    
     req.user = {
       id: user.id,
       isAdmin: user.isAdmin,
@@ -55,12 +52,11 @@ export const authenticate = async (
     
     next();
   } catch (error) {
-    // Invalid token, continue without authentication
+    
     next();
   }
 };
 
-// Middleware to require authentication
 export const requireAuth = (
   req: Request,
   res: Response,
@@ -76,7 +72,6 @@ export const requireAuth = (
   next();
 };
 
-// Middleware to require admin role
 export const requireAdmin = (
   req: Request,
   res: Response,

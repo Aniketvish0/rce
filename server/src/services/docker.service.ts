@@ -6,10 +6,9 @@ import { createGunzip } from 'zlib';
 import { pipeline } from 'stream/promises';
 import { Readable } from 'stream';
 
-// Initialize Docker client
 const docker = new Docker();
 
-// Define supported languages and their Docker images
+
 const LANGUAGE_IMAGES = {
   javascript: 'node:18-alpine',
   typescript: 'node:18-alpine',
@@ -18,7 +17,7 @@ const LANGUAGE_IMAGES = {
   'c++': 'gcc:11.2.0'
 };
 
-// Define file extensions for each language
+
 const FILE_EXTENSIONS = {
   javascript: 'js',
   typescript: 'ts',
@@ -27,7 +26,6 @@ const FILE_EXTENSIONS = {
   'c++': 'cpp'
 };
 
-// Define execution commands for each language
 const EXECUTION_COMMANDS = {
   javascript: (filename: string) => ['node', filename],
   typescript: (filename: string) => ['npx', 'ts-node', filename],
@@ -71,7 +69,7 @@ export async function executeCode(
   let container;
   
   try {
-    // Create test file with user code and test cases
+ 
     let testFileContent = '';
     
     if (language === 'javascript' || language === 'typescript') {
@@ -128,14 +126,12 @@ for i, test_case in enumerate(test_cases):
 print(f"\\n📊 Results: {passed}/{len(test_cases)} test cases passed")
       `;
     } else if (language === 'java') {
-      // Extract class name from code for Java
       const classNameMatch = code.match(/public\s+class\s+([A-Za-z0-9_]+)/);
       if (!classNameMatch) {
         throw new Error('Could not find class name in Java code');
       }
       const className = classNameMatch[1];
       
-      // Rename the file to match the class name
       filename = `${className}.java`;
       
       testFileContent = `
@@ -207,11 +203,10 @@ int main() {
       `;
     }
     
-    // Create and start container
     container = await docker.createContainer({
       Image: LANGUAGE_IMAGES[language as keyof typeof LANGUAGE_IMAGES],
       name: containerName,
-      Cmd: ['sleep', '10'], // Initial command to keep container running
+      Cmd: ['sleep', '10'], 
       WorkingDir: workDir,
       HostConfig: {
         Memory: 256 * 1024 * 1024, // 256MB memory limit

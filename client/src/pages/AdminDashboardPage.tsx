@@ -13,8 +13,7 @@ export function AdminDashboardPage() {
       setSubMenu(menu);
     }
   };
-  
-  // Mock data
+ 
   const stats = {
     users: 876,
     problems: 245,

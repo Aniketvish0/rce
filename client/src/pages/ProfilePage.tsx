@@ -9,7 +9,7 @@ export function ProfilePage() {
   const [username, setUsername] = useState(user?.username || '');
   const [avatar, setAvatar] = useState(user?.avatar || '');
   
-  // Mock data
+
   const stats = {
     problemsSolved: 72,
     submissions: 124,
@@ -31,9 +31,9 @@ export function ProfilePage() {
   };
   
   const handleSaveProfile = () => {
-    // In a real app, this would call an API to update the user's profile
+    
     setIsEditing(false);
-    // Update local user state
+   
   };
   
   const handleLogout = () => {

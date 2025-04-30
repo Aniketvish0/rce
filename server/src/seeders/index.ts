@@ -4,13 +4,13 @@ import bcrypt from 'bcrypt';
 
 export async function seedDatabase() {
   try {
-    // Check if we already have users
+   
     const userCount = await User.count();
     
     if (userCount === 0) {
       console.log('Seeding users...');
       
-      // Create admin user
+     
       const adminPassword = await bcrypt.hash('admin123', 10);
       await User.create({
         username: 'admin',
@@ -19,7 +19,7 @@ export async function seedDatabase() {
         isAdmin: true,
       });
       
-      // Create regular user
+     
       const userPassword = await bcrypt.hash('user123', 10);
       await User.create({
         username: 'user',
@@ -31,13 +31,13 @@ export async function seedDatabase() {
       console.log('Users seeded successfully');
     }
     
-    // Check if we already have problems
+   
     const problemCount = await Problem.count();
     
     if (problemCount === 0) {
       console.log('Seeding problems...');
       
-      // Add sample problems
+ 
       await Problem.bulkCreate([
         {
           title: 'Two Sum',

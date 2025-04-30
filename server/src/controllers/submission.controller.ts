@@ -6,7 +6,6 @@ import User from '../models/user.model';
 import { executeCode } from '../services/docker.service';
 import { generateCodeFeedback } from '../services/ai.service';
 
-// Submit a solution
 const submitSolutionSchema = z.object({
   problemId: z.string().uuid(),
   code: z.string(),
@@ -15,7 +14,6 @@ const submitSolutionSchema = z.object({
 
 export const submitSolution = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Must be authenticated
     if (!req.user) {
       return res.status(401).json({
         status: 'error',
@@ -23,11 +21,9 @@ export const submitSolution = async (req: Request, res: Response, next: NextFunc
       });
     }
     
-    // Validate request body
     const validatedData = submitSolutionSchema.parse(req.body);
     const { problemId, code, language } = validatedData;
     
-    // Get problem
     const problem = await Problem.findByPk(problemId);
     
     if (!problem) {
@@ -37,10 +33,8 @@ export const submitSolution = async (req: Request, res: Response, next: NextFunc
       });
     }
     
-    // Execute code against test cases
     const result = await executeCode(code, language, problem.testCases);
     
-    // Create submission record
     const submission = await Submission.create({
       userId: req.user.id,
       problemId,
@@ -51,7 +45,6 @@ export const submitSolution = async (req: Request, res: Response, next: NextFunc
       memory: result.memory,
     });
     
-    // Return submission details
     res.status(201).json({
       id: submission.id,
       problemId: submission.problemId,
@@ -67,10 +60,8 @@ export const submitSolution = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-// Get user submissions
 export const getUserSubmissions = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Must be authenticated
     if (!req.user) {
       return res.status(401).json({
         status: 'error',
@@ -78,7 +69,6 @@ export const getUserSubmissions = async (req: Request, res: Response, next: Next
       });
     }
     
-    // Get submissions for current user
     const submissions = await Submission.findAll({
       where: {
         userId: req.user.id,
@@ -93,7 +83,6 @@ export const getUserSubmissions = async (req: Request, res: Response, next: Next
       order: [['createdAt', 'DESC']],
     });
     
-    // Format response
     const formattedSubmissions = submissions.map((sub) => ({
       id: sub.id,
       problemId: sub.problemId,
@@ -112,12 +101,10 @@ export const getUserSubmissions = async (req: Request, res: Response, next: Next
   }
 };
 
-// Get submissions for a problem
 export const getProblemSubmissions = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { problemId } = req.params;
     
-    // Get submissions for the problem
     const submissions = await Submission.findAll({
       where: {
         problemId,
@@ -130,10 +117,9 @@ export const getProblemSubmissions = async (req: Request, res: Response, next: N
         },
       ],
       order: [['createdAt', 'DESC']],
-      limit: 100, // Limit to recent submissions
+      limit: 100, 
     });
     
-    // Format response
     const formattedSubmissions = submissions.map((sub) => ({
       id: sub.id,
       userId: sub.userId,
@@ -151,12 +137,10 @@ export const getProblemSubmissions = async (req: Request, res: Response, next: N
   }
 };
 
-// Get a specific submission
 export const getSubmission = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     
-    // Get submission
     const submission = await Submission.findByPk(id, {
       include: [
         {
@@ -179,7 +163,6 @@ export const getSubmission = async (req: Request, res: Response, next: NextFunct
       });
     }
     
-    // Check if user is authorized to view this submission
     if (!req.user?.isAdmin && submission.userId !== req.user?.id) {
       return res.status(403).json({
         status: 'error',
@@ -206,12 +189,10 @@ export const getSubmission = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-// Request AI feedback for a submission
 export const getAiFeedback = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     
-    // Get submission
     const submission = await Submission.findByPk(id);
     
     if (!submission) {
@@ -221,7 +202,6 @@ export const getAiFeedback = async (req: Request, res: Response, next: NextFunct
       });
     }
     
-    // Check if user is authorized to get feedback for this submission
     if (!req.user?.isAdmin && submission.userId !== req.user?.id) {
       return res.status(403).json({
         status: 'error',
@@ -229,14 +209,12 @@ export const getAiFeedback = async (req: Request, res: Response, next: NextFunct
       });
     }
     
-    // Generate AI feedback
     const feedback = await generateCodeFeedback(
       submission.code,
       submission.language,
       submission.problemId
     );
     
-    // Save feedback to the submission
     await submission.update({
       aiFeedback: JSON.stringify(feedback),
     });

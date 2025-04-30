@@ -25,12 +25,10 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public createdAt!: Date;
   public updatedAt!: Date;
   
-  // Check if password matches the hashed one
   public async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
   
-  // Remove sensitive data when converting to JSON
   public toJSON(): Record<string, any> {
     const values = Object.assign({}, this.get());
     delete values.password;
@@ -79,13 +77,11 @@ User.init(
     modelName: 'User',
     tableName: 'users',
     hooks: {
-      // Hash password before saving
       beforeCreate: async (user) => {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
       },
       beforeUpdate: async (user) => {
-        // Only hash password if it was changed
         if (user.changed('password')) {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);

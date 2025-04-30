@@ -3,7 +3,6 @@ import 'dotenv/config';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Configure Sequelize with PostgreSQL connection
 export const sequelize = new Sequelize(
   process.env.DB_NAME || 'codehub',
   process.env.DB_USER || 'postgres',
